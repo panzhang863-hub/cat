@@ -1,0 +1,74 @@
+<view class="container">
+  <!-- 房间码 -->
+  <view class="room-code-section">
+    <view class="label">房间码</view>
+    <view class="room-code">{{roomCode}}</view>
+    <view class="room-code-actions">
+      <text class="share-btn" bindtap="onShare">📋 复制分享</text>
+    </view>
+  </view>
+
+  <!-- 玩家列表 -->
+  <view class="players-section">
+    <view class="section-header">
+      <text class="section-title">玩家 ({{players.length}}/10)</text>
+    </view>
+
+    <view class="player-list">
+      <view
+        class="player-item"
+        wx:for="{{players}}"
+        wx:key="openId"
+      >
+        <image class="avatar" src="{{item.avatarUrl || '/assets/default-avatar.png'}}" mode="aspectFill" />
+        <text class="player-name">{{item.nickName}}</text>
+        <text wx:if="{{index === 0}}" class="tag tag-host">房主</text>
+      </view>
+
+      <!-- 空位 -->
+      <view class="player-item empty" wx:for="{{10 - players.length}}" wx:key="*this">
+        <view class="avatar empty-avatar"></view>
+        <text class="player-name empty-text">等待加入...</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游戏配置预览 -->
+  <view class="card config-preview">
+    <view class="config-row">
+      <text>⏱️ 游戏时长</text>
+      <text class="config-value">{{config.duration / 60}} 分钟</text>
+    </view>
+    <view class="config-row">
+      <text>👁️ 查看次数</text>
+      <text class="config-value">{{config.peekCount}} 次</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="bottom-actions">
+    <button
+      wx:if="{{isHost}}"
+      class="btn-secondary config-btn"
+      bindtap="onConfigure"
+    >
+      ⚙️ 修改配置
+    </button>
+
+    <button
+      wx:if="{{isHost && players.length >= 2}}"
+      class="btn-primary start-btn"
+      bindtap="onStartGame"
+    >
+      🎮 开始游戏
+    </button>
+
+    <view wx:if="{{players.length < 2}}" class="hint">
+      至少需要 2 人才能开始游戏
+    </view>
+
+    <button class="btn-secondary leave-btn" bindtap="onLeave">
+      离开房间
+    </button>
+  </view>
+</view>

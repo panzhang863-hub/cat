@@ -1,0 +1,38 @@
+<view class="container">
+  <!-- 结果图标 -->
+  <view class="result-hero">
+    <view class="result-icon">{{isWin ? '🏆' : '😿'}}</view>
+    <view class="result-title {{isWin ? 'win' : 'lose'}}">
+      {{isWin ? '你赢了！' : '你输了'}}
+    </view>
+    <view class="result-summary">
+      {{winner === 'hiders' ? '躲藏者方获胜' : '寻找者方获胜'}}
+    </view>
+  </view>
+
+  <!-- 战绩卡片 -->
+  <view class="card stats-card" wx:if="{{gameDetail}}">
+    <view class="stat-row">
+      <text>🎭 你的角色</text>
+      <text class="stat-value">{{myRole === 'seeker' ? '寻找者' : '躲藏者'}}</text>
+    </view>
+    <view class="stat-row">
+      <text>⏱️ 游戏用时</text>
+      <text class="stat-value">{{formatTime(gameDetail.duration)}}</text>
+    </view>
+    <view class="stat-row">
+      <text>👥 参与人数</text>
+      <text class="stat-value">{{gameDetail.playerCount}} 人</text>
+    </view>
+    <view class="stat-row">
+      <text>🕐 开始时间</text>
+      <text class="stat-value">{{gameDetail.startedAt}}</text>
+    </view>
+  </view>
+
+  <!-- 操作 -->
+  <view class="actions">
+    <button class="btn-primary" bindtap="onPlayAgain">🔄 再来一局</button>
+    <button class="btn-secondary" bindtap="onViewHistory">📋 查看历史</button>
+  </view>
+</view>

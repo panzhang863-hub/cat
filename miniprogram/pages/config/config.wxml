@@ -1,0 +1,75 @@
+<view class="container">
+  <!-- 地图区域绘制 -->
+  <view class="map-section">
+    <view class="map-hint">👆 在地图上点击添加区域顶点（至少3个点）</view>
+    <map
+      id="configMap"
+      class="map"
+      latitude="{{mapCenter.lat}}"
+      longitude="{{mapCenter.lng}}"
+      scale="15"
+      show-location="{{true}}"
+      bindtap="onMapTap"
+      polygons="{{zoneBoundary.length >= 3 ? [{points: zoneBoundary, fillColor: '#FF6B3540', strokeColor: '#FF6B35', strokeWidth: 2}] : []}}"
+      markers="{{zoneBoundary.map((p, i) => ({id: i, latitude: p.lat, longitude: p.lng, width: 12, height: 12, callout: {content: String(i+1), fontSize: 12, borderRadius: 8, padding: 4, display: 'ALWAYS'}}))}}"
+    ></map>
+
+    <view class="vertex-info">
+      <text>已选 {{zoneBoundary.length}} 个顶点</text>
+      <text class="link" bindtap="onUndoVertex" wx:if="{{zoneBoundary.length > 0}}">↩ 撤销</text>
+      <text class="link" bindtap="onClearBoundary" wx:if="{{zoneBoundary.length > 0}}">✕ 清除</text>
+    </view>
+  </view>
+
+  <!-- 参数设置 -->
+  <view class="settings">
+    <!-- 游戏时长 -->
+    <view class="setting-item">
+      <view class="setting-header">
+        <text>⏱️ 游戏时长</text>
+        <text class="setting-value">{{duration / 60}} 分钟</text>
+      </view>
+      <slider
+        min="300"
+        max="3600"
+        step="60"
+        value="{{duration}}"
+        activeColor="#FF6B35"
+        backgroundColor="rgba(255,255,255,0.1)"
+        block-size="20"
+        bindchange="onDurationChange"
+      />
+      <view class="slider-labels">
+        <text>5分钟</text>
+        <text>60分钟</text>
+      </view>
+    </view>
+
+    <!-- 查看次数 -->
+    <view class="setting-item">
+      <view class="setting-header">
+        <text>👁️ 寻找者查看次数</text>
+        <text class="setting-value">{{peekCount}} 次</text>
+      </view>
+      <slider
+        min="1"
+        max="10"
+        step="1"
+        value="{{peekCount}}"
+        activeColor="#FF6B35"
+        backgroundColor="rgba(255,255,255,0.1)"
+        block-size="20"
+        bindchange="onPeekCountChange"
+      />
+      <view class="slider-labels">
+        <text>1次</text>
+        <text>10次</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存 -->
+  <button class="btn-primary save-btn" bindtap="onSave">
+    ✅ 保存配置
+  </button>
+</view>

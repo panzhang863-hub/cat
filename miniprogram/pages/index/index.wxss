@@ -1,0 +1,91 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64rpx 40rpx;
+  min-height: 100vh;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.logo {
+  font-size: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.title {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: #FF6B35;
+  margin-bottom: 12rpx;
+}
+
+.subtitle {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.actions {
+  width: 100%;
+  max-width: 500rpx;
+}
+
+.join-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin-bottom: 8rpx;
+}
+
+.join-btn {
+  width: 100%;
+  margin-top: 8rpx;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 40rpx 0;
+}
+
+.divider .line {
+  flex: 1;
+  height: 1rpx;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.divider-text {
+  margin: 0 24rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.create-btn {
+  width: 100%;
+}
+
+.history-link {
+  text-align: center;
+  margin-top: 48rpx;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 16rpx;
+}
+
+.footer {
+  position: absolute;
+  bottom: 48rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.25);
+  line-height: 1.8;
+}

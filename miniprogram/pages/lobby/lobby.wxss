@@ -1,0 +1,140 @@
+.container {
+  padding: 40rpx;
+  min-height: 100vh;
+}
+
+/* 房间码 */
+.room-code-section {
+  text-align: center;
+  margin-bottom: 48rpx;
+}
+
+.label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12rpx;
+}
+
+.room-code {
+  font-size: 72rpx;
+  font-weight: 900;
+  color: #FF6B35;
+  letter-spacing: 12rpx;
+  font-family: 'Courier New', monospace;
+}
+
+.room-code-actions {
+  margin-top: 16rpx;
+}
+
+.share-btn {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* 玩家列表 */
+.players-section {
+  margin-bottom: 32rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.player-item.empty {
+  opacity: 0.3;
+}
+
+.avatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.empty-avatar {
+  border: 2rpx dashed rgba(255, 255, 255, 0.2);
+  background: none;
+}
+
+.player-name {
+  flex: 1;
+  font-size: 30rpx;
+}
+
+.empty-text {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.tag-host {
+  background: rgba(255, 107, 53, 0.15);
+  color: #FF6B35;
+  padding: 4rpx 16rpx;
+  border-radius: 6rpx;
+  font-size: 22rpx;
+}
+
+/* 配置预览 */
+.config-preview {
+  margin-bottom: 40rpx;
+}
+
+.config-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  font-size: 28rpx;
+}
+
+.config-row:not(:last-child) {
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.06);
+}
+
+.config-value {
+  color: #FF8C42;
+  font-weight: 600;
+}
+
+/* 底部按钮 */
+.bottom-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-top: auto;
+}
+
+.start-btn {
+  width: 100%;
+}
+
+.config-btn, .leave-btn {
+  width: 100%;
+}
+
+.hint {
+  text-align: center;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 12rpx;
+}

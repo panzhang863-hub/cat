@@ -1,0 +1,58 @@
+<view class="container">
+  <!-- Logo & 标题 -->
+  <view class="hero">
+    <view class="logo">🐱</view>
+    <view class="title">躲猫猫</view>
+    <view class="subtitle">现实世界的捉迷藏 · GPS 定位对战</view>
+  </view>
+
+  <!-- 操作区 -->
+  <view class="actions">
+    <!-- 加入房间 -->
+    <view class="card join-section">
+      <view class="section-title">加入房间</view>
+      <input
+        class="input-field"
+        placeholder="输入6位房间码"
+        placeholder-style="rgba(255,255,255,0.3)"
+        maxlength="6"
+        value="{{roomCode}}"
+        bindinput="onRoomCodeInput"
+      />
+      <button
+        class="btn-primary join-btn"
+        bindtap="onJoinRoom"
+        loading="{{joining}}"
+      >
+        加入游戏
+      </button>
+    </view>
+
+    <!-- 分割线 -->
+    <view class="divider">
+      <view class="line"></view>
+      <text class="divider-text">或</text>
+      <view class="line"></view>
+    </view>
+
+    <!-- 创建房间 -->
+    <button
+      class="btn-primary create-btn"
+      bindtap="onCreateRoom"
+      loading="{{creating}}"
+    >
+      创建新房间
+    </button>
+
+    <!-- 历史记录 -->
+    <view class="history-link" bindtap="onViewHistory">
+      📋 查看历史记录
+    </view>
+  </view>
+
+  <!-- 底部说明 -->
+  <view class="footer">
+    <text>· 至少 2 人 · 在地图上画游戏区域 ·</text>
+    <text>· 寻找者可查看躲藏者位置 · 越界淘汰 ·</text>
+  </view>
+</view>

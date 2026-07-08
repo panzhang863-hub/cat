@@ -1,0 +1,96 @@
+<view class="container">
+  <!-- 地图层 -->
+  <map
+    id="gameMap"
+    class="game-map"
+    latitude="{{mapCenter.lat}}"
+    longitude="{{mapCenter.lng}}"
+    scale="16"
+    show-location="{{true}}"
+    markers="{{markers}}"
+    polygons="{{polygons}}"
+    enable-3D="{{false}}"
+  ></map>
+
+  <!-- 顶部 HUD -->
+  <view class="hud-top">
+    <!-- 角色 + 状态 -->
+    <view class="hud-left">
+      <view class="role-badge {{myRole}}">
+        {{myRole === 'seeker' ? '🔍 寻找者' : '🙈 躲藏者'}}
+      </view>
+      <view class="status-badge {{myStatus}}">
+        {{myStatus === 'alive' ? '存活' : '已淘汰'}}
+      </view>
+    </view>
+
+    <!-- 倒计时 -->
+    <view class="hud-center">
+      <view class="timer {{timeRemaining <= 60 ? 'danger' : ''}}">
+        {{gameStatus === 'preparing' ? '准备中...' : formatTime(timeRemaining)}}
+      </view>
+    </view>
+
+    <!-- 查看次数 -->
+    <view class="hud-right" wx:if="{{myRole === 'seeker'}}">
+      <view class="peek-count" bindtap="onPeek">
+        👁️ × {{peekRemaining}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 查看按钮（寻找者） -->
+  <view
+    class="peek-button {{peekActive ? 'active' : ''}}"
+    wx:if="{{myRole === 'seeker' && myStatus === 'alive'}}"
+    bindtap="onPeek"
+  >
+    <text wx:if="{{!peekActive}}">🔍 查看位置 ({{peekRemaining}}次)</text>
+    <text wx:else>📍 查看中... {{peekExpiresIn}}s</text>
+  </view>
+
+  <!-- 抓捕弹窗 -->
+  <view class="capture-popup" wx:if="{{captureTarget}}">
+    <view class="capture-card">
+      <view class="capture-icon">🎯</view>
+      <view class="capture-title">发现目标！</view>
+      <view class="capture-name">{{captureTarget.nickName}} ({{captureTarget.distance}}米)</view>
+      <view class="capture-hint">{{captureExpiresIn}}秒内确认</view>
+      <view class="capture-actions">
+        <button class="btn-primary" bindtap="onConfirmCapture">确认抓捕</button>
+        <button class="btn-secondary" bindtap="onDismissCapture">忽略</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- Peek 结果（寻找者看到躲藏者时的小列表） -->
+  <view class="peek-hud" wx:if="{{peekActive && peekHiders.length > 0}}">
+    <view class="peek-header">躲藏者位置 ({{peekExpiresIn}}秒后隐藏)</view>
+    <scroll-view class="peek-list" scroll-x>
+      <view class="peek-item" wx:for="{{peekHiders}}" wx:key="openId">
+        <text>{{item.nickName}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 淘汰日志 -->
+  <view class="elim-log" wx:if="{{elimLog.length > 0}}">
+    <view class="log-item" wx:for="{{elimLog}}" wx:key="*this">
+      <text class="log-time">{{item.time}}</text>
+      <text class="log-text">{{item.text}}</text>
+    </view>
+  </view>
+
+  <!-- 游戏结束弹窗 -->
+  <view class="result-overlay" wx:if="{{showResult}}">
+    <view class="result-card">
+      <view class="result-icon">{{winner === 'hiders' ? '🎉' : '🔍'}}</view>
+      <view class="result-title">
+        {{winner === 'hiders' ? '躲藏者获胜！' : '寻找者获胜！'}}
+      </view>
+      <view class="result-detail">
+        {{myStatus === 'alive' ? '你存活到了最后！' : '你被淘汰了'}}
+      </view>
+    </view>
+  </view>
+</view>

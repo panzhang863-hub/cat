@@ -1,0 +1,53 @@
+<view class="container">
+  <view class="page-title">📋 历史记录</view>
+  <view class="total-info">共 {{total}} 场游戏</view>
+
+  <!-- 记录列表 -->
+  <view class="record-list" wx:if="{{records.length > 0}}">
+    <view
+      class="card record-item"
+      wx:for="{{records}}"
+      wx:key="roomCode"
+      data-room-code="{{item.roomCode}}"
+      bindtap="onTapRecord"
+    >
+      <view class="record-header">
+        <view class="record-result {{item.winner === (item.myRole === 'hider' ? 'hiders' : 'seekers') ? 'win' : 'lose'}}">
+          {{item.winner === 'hiders' ? '躲藏者胜' : '寻找者胜'}}
+        </view>
+        <view class="record-date">{{formatDate(item.endedAt)}}</view>
+      </view>
+
+      <view class="record-body">
+        <view class="record-stat">
+          <text>⏱️ {{formatTime(item.duration)}}</text>
+        </view>
+        <view class="record-stat">
+          <text>👥 {{item.playerCount}}人</text>
+        </view>
+        <view class="record-stat">
+          <text>🎭 {{roleLabel(item.myRole)}}</text>
+        </view>
+      </view>
+
+      <view class="record-tag {{item.myStatus}}">
+        {{item.myStatus === 'alive' ? '存活' : '被淘汰'}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && records.length === 0}}">
+    <text class="empty-icon">🎮</text>
+    <text class="empty-text">还没有玩过游戏</text>
+    <text class="empty-hint">快去创建或加入房间吧</text>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+  <view class="load-more" wx:if="{{noMore && records.length > 0}}">
+    <text>— 没有更多了 —</text>
+  </view>
+</view>

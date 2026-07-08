@@ -1,0 +1,66 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 40rpx 40rpx;
+  min-height: 100vh;
+}
+
+.result-hero {
+  text-align: center;
+  margin-bottom: 48rpx;
+}
+
+.result-icon {
+  font-size: 140rpx;
+  margin-bottom: 20rpx;
+}
+
+.result-title {
+  font-size: 52rpx;
+  font-weight: 900;
+  margin-bottom: 12rpx;
+}
+
+.result-title.win {
+  color: #FFD700;
+}
+
+.result-title.lose {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.result-summary {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.stats-card {
+  width: 100%;
+  max-width: 500rpx;
+  margin-bottom: 48rpx;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+}
+
+.stat-row:not(:last-child) {
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.06);
+}
+
+.stat-value {
+  color: #FF8C42;
+  font-weight: 600;
+}
+
+.actions {
+  width: 100%;
+  max-width: 500rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}

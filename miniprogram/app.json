@@ -1,0 +1,23 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/lobby/lobby",
+    "pages/config/config",
+    "pages/game/game",
+    "pages/result/result",
+    "pages/history/history"
+  ],
+  "window": {
+    "navigationBarTitleText": "躲猫猫",
+    "navigationBarBackgroundColor": "#FF6B35",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#1A1A2E"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "游戏需要获取你的实时位置来玩躲猫猫"
+    }
+  },
+  "requiredBackgroundModes": ["location"],
+  "sitemapLocation": "sitemap.json"
+}
