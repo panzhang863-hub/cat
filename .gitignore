@@ -1,13 +1,39 @@
 # 依赖
+node_modules/
 server/node_modules/
 
 # 构建产物
 uniapp/unpackage/
 
-# 编辑器
+# 编辑器 / 系统
 .hbuilderx/
+.vscode/
+.idea/
 *.log
-
-# 系统文件
-.DS_Store
 Thumbs.db
+
+# 环境变量（含密钥，绝不提交）
+.env
+*.env
+!.env.example
+
+# 本地工具配置
+.claude/
+
+# 私有运维资料 / 部署打包产物
+PROJECT_GUIDE.md
+*.tgz
+
+# 误复制到 server/utils 下的冗余服务端副本（不影响 utils/geo.js、utils/roomCode.js）
+server/utils/app.js
+server/utils/package.json
+server/utils/package-lock.json
+server/utils/config/
+server/utils/models/
+server/utils/routes/
+server/utils/services/
+server/utils/store/
+server/utils/node_modules/
+
+# 运行日志
+server/feedbacks.log

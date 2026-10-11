@@ -34,7 +34,7 @@ export default {
   onReachBottom(){this.load();},
   methods:{
     async load(){if(this.loading||this.noMore)return;this.loading=true;const a=getApp();try{const r=await uni.request({url:`${a.globalData.serverUrl}/api/history`,method:'GET',data:{openId:a.getOpenId(),limit:20,offset:this.records.length}});if(r.statusCode===200){this.records=[...this.records,...r.data.records];this.total=r.data.total;this.noMore=this.records.length>=r.data.total;}}catch(e){uni.showToast({title:'加载失败',icon:'none'});}finally{this.loading=false;}},
-    onTap(i){uni.showToast({title:`详情: ${i.roomCode}`,icon:'none'});},
+    onTap(i){uni.navigateTo({url:`/pages/result/result?roomCode=${i.roomCode}&winner=${i.winner}&myRole=${i.myRole}&myStatus=${i.myStatus}&fromHistory=1`});},
     fmt(s){if(!s)return'0:00';const m=Math.floor(s/60),sec=s%60;return`${m}:${String(sec).padStart(2,'0')}`;},
     fd(d){if(!d)return'';const dt=new Date(d);return`${dt.getMonth()+1}/${dt.getDate()} ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`;},
   },

@@ -133,7 +133,11 @@ class MemoryStore {
   }
 
   del(...keys) {
-    for (const k of keys) this.kv.delete(k);
+    for (const k of keys) {
+      this.kv.delete(k);
+      this.hashes.delete(k);
+      this.sets.delete(k);
+    }
     return Promise.resolve(keys.length);
   }
 

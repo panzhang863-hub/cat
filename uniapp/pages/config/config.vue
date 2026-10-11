@@ -6,7 +6,7 @@
     <view class="map-wrap" v-if="!viewOnly">
       <map class="map" id="configMap" :latitude="mapCenter.lat" :longitude="mapCenter.lng" :scale="mapScale" :show-location="true" @regionchange="onRegionChange"
         :circles="showMapCircle"
-        :polygons="savedBoundary&&savedBoundary.length>=3?[{points:savedBoundary,fillColor:'#FFA07A20',strokeColor:'#FFA07A',strokeWidth:3}]:[]"></map>
+        :polygons="savedPolygon"></map>
 
       <!-- 十字准星 -->
       <view class="crosshair">⊕</view>
@@ -36,6 +36,12 @@
       <view class="radius-label">
         <text>⭕ 区域半径</text>
         <text class="radius-val">{{ circleRadius }} 米</text>
+      </view>
+      <view class="preset-row">
+        <text :class="['preset',circleRadius==50?'preset-on':'']" @click="circleRadius=50">小公园 50m</text>
+        <text :class="['preset',circleRadius==100?'preset-on':'']" @click="circleRadius=100">小区 100m</text>
+        <text :class="['preset',circleRadius==200?'preset-on':'']" @click="circleRadius=200">大学 200m</text>
+        <text :class="['preset',circleRadius==500?'preset-on':'']" @click="circleRadius=500">大型 500m</text>
       </view>
       <slider :min="10" :max="500" :step="10" :value="circleRadius" activeColor="#FFA07A" backgroundColor="#F5F0E5" block-size="20" @change="e=>circleRadius=e.detail.value"/>
       <view class="s-ends"><text>10米</text><text>500米</text></view>
@@ -73,7 +79,14 @@ export default {
   computed:{
     gpsLabel(){const m=this.gpsInterval/1000;return m+'秒'+(m>=5?'(省电)':'');},
     viewPolygons(){
-      return (this.viewOnly&&this.savedBoundary&&this.savedBoundary.length>=3)?[{points:this.savedBoundary,fillColor:'#FFA07A30',strokeColor:'#FFA07A',strokeWidth:4}]:[];
+      if(!this.viewOnly||!this.savedBoundary||this.savedBoundary.length<3)return [];
+      const pts=this.savedBoundary.map(p=>({latitude:p.lat,longitude:p.lng}));
+      return [{points:pts,fillColor:'#FFA07A30',strokeColor:'#FFA07A',strokeWidth:4}];
+    },
+    savedPolygon(){
+      if(!this.savedBoundary||this.savedBoundary.length<3)return [];
+      const pts=this.savedBoundary.map(p=>({latitude:p.lat,longitude:p.lng}));
+      return [{points:pts,fillColor:'#FFA07A20',strokeColor:'#FFA07A',strokeWidth:3}];
     },
     viewCircles(){
       if(!this.viewOnly||!this.savedBoundary||this.savedBoundary.length<3)return[];
@@ -83,7 +96,8 @@ export default {
     },
     showMapCircle(){
       if(!this.circleCenter||this.circleRadius<=0)return[];
-      return [{latitude:this.circleCenter.lat,longitude:this.circleCenter.lng,radius:this.circleRadius,fillColor:'#FFA07A20',strokeColor:'#FFA07A',strokeWidth:3}];
+      const c=this.circleCenter,r=this.circleRadius;
+      return [{latitude:c.lat,longitude:c.lng,radius:r,fillColor:'#FFA07A28',strokeColor:'#FF6B35',strokeWidth:2}];
     }
   },
   onLoad(o){
@@ -193,6 +207,9 @@ export default {
 .radius-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:4rpx;font-size:28rpx;color:#4A3728;}
 .radius-val{color:#FFA07A;font-weight:700;}
 .s-ends{display:flex;justify-content:space-between;font-size:20rpx;color:#C4B8A8;margin-top:2rpx;}
+.preset-row{display:flex;gap:12rpx;margin-bottom:10rpx;flex-wrap:wrap;}
+.preset{padding:6rpx 16rpx;border-radius:20rpx;font-size:22rpx;background:#F5F0E5;color:#8B7E74;}
+.preset.preset-on{background:#FFA07A;color:#fff;}
 .settings{padding:8rpx 40rpx 4rpx;flex-shrink:0;}
 .s-item{margin-bottom:10rpx;}
 .s-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4rpx;font-size:28rpx;color:#4A3728;}

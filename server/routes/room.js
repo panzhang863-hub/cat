@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const store = require('../store/memory');
 const { generateRoomCode } = require('../utils/roomCode');
+const { msgSecCheck } = require('../services/contentCheck');
 
 // 创建房间
 router.post('/create', async (req, res) => {
   try {
     const { openId, nickName, avatarUrl } = req.body;
     if (!openId) return res.status(400).json({ error: '缺少 openId' });
+    if (nickName) { const cr = await msgSecCheck(openId, nickName); if (!cr.ok) return res.json({ error: cr.errmsg }); }
 
     let roomCode, exists, attempts = 0;
     do {
@@ -157,6 +159,68 @@ router.post('/:roomCode/leave', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: '服务器错误' });
   }
+});
+
+// 被踢玩家临时记录 (openId → roomCode)，5分钟过期
+const kickedPlayers = new Map();
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of kickedPlayers) { if (now - v.ts > 300000) kickedPlayers.delete(k); }
+}, 60000);
+
+// 踢出房间（仅房主）
+router.post('/:roomCode/kick', async (req, res) => {
+  try {
+    const { openId, targetOpenId } = req.body;
+    const game = store.findOne({ roomCode: req.params.roomCode, status: 'waiting' });
+    if (!game) return res.status(404).json({ error: '房间不存在' });
+    if (game.players[0].openId !== openId) return res.status(403).json({ error: '仅房主可踢人' });
+    if (openId === targetOpenId) return res.status(400).json({ error: '不能踢自己' });
+
+    const target = game.players.find(p => p.openId === targetOpenId);
+    if (!target) return res.status(404).json({ error: '玩家不在房间' });
+
+    game.players = game.players.filter(p => p.openId !== targetOpenId);
+    kickedPlayers.set(targetOpenId, { roomCode: req.params.roomCode, ts: Date.now() });
+    await game.save();
+    res.json({ success: true, kicked: target.nickName });
+  } catch (err) {
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
+// 转让房主
+router.post('/:roomCode/transfer', async (req, res) => {
+  try {
+    const { openId, targetOpenId } = req.body;
+    const game = store.findOne({ roomCode: req.params.roomCode, status: 'waiting' });
+    if (!game) return res.status(404).json({ error: '房间不存在' });
+    if (game.players[0].openId !== openId) return res.status(403).json({ error: '仅房主可转让' });
+    if (openId === targetOpenId) return res.status(400).json({ error: '不能转给自己' });
+
+    const idx = game.players.findIndex(p => p.openId === targetOpenId);
+    if (idx < 0) return res.status(404).json({ error: '目标玩家不在房间' });
+
+    // 交换位置：目标移到第一位
+    const target = game.players[idx];
+    game.players.splice(idx, 1);
+    game.players.unshift(target);
+    await game.save();
+    res.json({ success: true, newHost: target.nickName });
+  } catch (err) {
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
+// 轮询时检查是否被踢
+router.get('/:roomCode/kicked', (req, res) => {
+  const { openId } = req.query;
+  const record = kickedPlayers.get(openId);
+  if (record && record.roomCode === req.params.roomCode) {
+    kickedPlayers.delete(openId);
+    return res.json({ kicked: true });
+  }
+  res.json({ kicked: false });
 });
 
 module.exports = router;

@@ -6,18 +6,23 @@ export default {
     serverUrl: getServerUrl(), wsUrl: getWsUrl(),
   },
   onLaunch() {
-    // 每次启动刷新配置
     this.globalData.serverUrl = getServerUrl();
     this.globalData.wsUrl = getWsUrl();
-    // #ifdef MP-WEIXIN
-    uni.login({ success: r => { if(r.code) this.globalData.openId = 'wx_' + r.code.substring(0,8); }});
-    // #endif
-    // #ifdef APP-PLUS
-    this.globalData.openId = 'app_' + (uni.getSystemInfoSync().deviceId||'d').replace(/[^a-zA-Z0-9]/g,'').substring(0,16);
-    // #endif
-    // #ifdef H5
-    this.globalData.openId = 'h5_' + Date.now().toString(36);
-    // #endif
+    // 同步获取 openId：先从本地存储读，没有则生成并存入
+    let id = uni.getStorageSync('catchcat_openId');
+    if (!id) {
+      // #ifdef MP-WEIXIN
+      id = 'wx_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      // #endif
+      // #ifdef APP-PLUS
+      id = 'app_' + (uni.getSystemInfoSync().deviceId||'d').replace(/[^a-zA-Z0-9]/g,'').substring(0,16);
+      // #endif
+      // #ifdef H5
+      id = 'h5_' + Date.now().toString(36);
+      // #endif
+      uni.setStorageSync('catchcat_openId', id);
+    }
+    this.globalData.openId = id;
   },
   methods: {
     getOpenId() { return this.globalData.openId || ('user_'+Date.now().toString(36)); },

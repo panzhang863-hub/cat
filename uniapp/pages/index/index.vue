@@ -1,5 +1,10 @@
 <template>
   <view class="container">
+    <!-- 背景音乐开关 -->
+    <view class="music-btn" :class="bgmOn?'':'music-off'" @click="onToggleBgm">
+      <text>{{ bgmOn ? '🎵' : '🔇' }}</text>
+    </view>
+
     <!-- 猫咪插画 -->
     <view class="hero">
       <view class="cat-wrap">
@@ -46,8 +51,6 @@
 
     <text class="history-link" @click="onViewHistory">🐾 历史对战记录</text>
 
-    <!-- 服务器设置入口 -->
-    <view class="settings-entry" @click="onShowSettings">⚙️ 服务器设置</view>
     <view class="settings-panel" v-if="showSettings">
       <view class="settings-mask" @click="showSettings=false"></view>
       <view class="settings-card">
@@ -60,24 +63,40 @@
       </view>
     </view>
 
-    <text class="version">v1.0.0</text>
+    <view class="bottom-row">
+      <text class="version" @click="onVersionTap">v1.0.0</text>
+      <text class="feedback-link" @click="onFeedback">优化建议</text>
+    </view>
+
+    <!-- 反馈弹窗 -->
+    <view class="guide-mask" v-if="showFeedback" @click="showFeedback=false">
+      <view class="guide-card" @click.stop>
+        <text class="g-title">优化建议</text>
+        <textarea class="f-input" v-model="feedbackText" placeholder="说说你想优化的地方..." maxlength="500"/>
+        <view class="g-btn" @click="onSubmitFeedback">提交</view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script>
 import { getServerUrl, setServerUrl } from '../../utils/config.js';
+import { playBgm, toggleBgm, isBgmOn } from '../../utils/audio.js';
 export default {
-  data() { return { roomCode: '', nickName: '', showSettings: false, serverUrl: '', showGuide: false,
+  data() { return { roomCode: '', nickName: '', showSettings: false, serverUrl: '', showGuide: false, showFeedback: false, feedbackText: '', versionTaps: 0, bgmOn:true,
     steps:[
       {title:'创建房间',desc:'点击「创建新房间」，你会成为房主🐱。把6位房间码分享给朋友'},
       {title:'选择阵营',desc:'猫猫负责抓人🙈，鼠鼠负责躲藏🐭。选你喜欢的阵营吧！'},
       {title:'开始游戏',desc:'房主在地图上画好区域后开始。猫猫用「查看」发现鼠鼠，靠近后抓捕！'},
     ]
   }; },
-  onLoad() { const a=getApp(); const n=a.globalData.nickName; this.nickName=(n&&n!=='玩家')?n:''; this.serverUrl=getServerUrl(); },
+  onLoad(o) { const a=getApp(); const n=a.globalData.nickName; this.nickName=(n&&n!=='玩家')?n:(uni.getStorageSync('nickName')||''); this.serverUrl=getServerUrl(); if(o&&o.room){this.roomCode=o.room;} },
+  onShow() { this.bgmOn = isBgmOn(); playBgm(); },
+  onShareAppMessage() { return { title: '猫猫快追 - 现实世界捉迷藏，快来一起玩！', path: '/pages/index/index' }; },
+  onShareTimeline() { return { title: '猫猫快追 - 现实世界捉迷藏，快来一起玩！' }; },
   methods: {
-    onNickInput(e){this.nickName=e.detail.value;},
-    onShowSettings(){this.serverUrl=getServerUrl();this.showSettings=true;},
+    onNickInput(e){this.nickName=e.detail.value;if(e.detail.value)uni.setStorageSync('nickName',e.detail.value);},
+    onVersionTap(){this.versionTaps++;if(this.versionTaps>=5){this.versionTaps=0;this.serverUrl=getServerUrl();this.showSettings=true;}},
     onSaveServer(){
       if(!this.serverUrl||!this.serverUrl.startsWith('http')){uni.showToast({title:'请输入正确的地址',icon:'none'});return;}
       setServerUrl(this.serverUrl);
@@ -123,13 +142,22 @@ export default {
         fail:(e)=>{uni.showToast({title:'无法连接服务器',icon:'none'});}
       });
     },
+    onFeedback(){this.showFeedback=true;this.feedbackText='';},
+    onSubmitFeedback(){
+      if(!this.feedbackText.trim()){uni.showToast({title:'请写点什么',icon:'none'});return;}
+      const a=getApp();
+      uni.request({url:`${a.globalData.serverUrl}/api/feedback`,method:'POST',data:{openId:a.getOpenId(),nickName:a.getNickName(),text:this.feedbackText},success:()=>{this.showFeedback=false;uni.showToast({title:'收到！谢谢反馈',icon:'success'});},fail:()=>uni.showToast({title:'提交失败',icon:'none'})});
+    },
     onViewHistory() { uni.navigateTo({url:'/pages/history/history'}); },
+    onToggleBgm() { this.bgmOn = toggleBgm(); },
   },
 };
 </script>
 
 <style scoped>
 .container { display:flex; flex-direction:column; align-items:center; padding:40rpx 48rpx 60rpx; min-height:100vh; }
+.music-btn { position:fixed; top:24rpx; right:24rpx; width:64rpx; height:64rpx; border-radius:50%; background:rgba(255,255,255,0.92); display:flex; align-items:center; justify-content:center; font-size:32rpx; box-shadow:0 2rpx 10rpx rgba(0,0,0,0.08); z-index:50; }
+.music-btn.music-off { opacity:0.55; }
 
 /* ── 猫咪插画 ── */
 .hero { text-align:center; margin-bottom:28rpx; }
@@ -199,8 +227,6 @@ export default {
 /* 历史 */
 .history-link { margin-top:56rpx; font-size:26rpx; color:#C4B8A8; padding:16rpx; }
 
-/* 设置 */
-.settings-entry { margin-top:24rpx; font-size:22rpx; color:#D0C8C0; padding:12rpx; }
 .settings-mask { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); z-index:100; }
 .settings-card { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; border-radius:24rpx; padding:40rpx; width:560rpx; z-index:101; box-shadow:0 8rpx 40rpx rgba(0,0,0,0.12); }
 .stitle { font-size:32rpx; font-weight:700; color:#4A3728; display:block; margin-bottom:20rpx; }
@@ -221,5 +247,8 @@ export default {
 .g-btn { background:linear-gradient(135deg,#FFDD75,#FFC850); color:#4A3728; border-radius:40rpx; padding:18rpx; font-size:28rpx; font-weight:700; text-align:center; margin-top:16rpx; }
 
 /* 版本号 */
-.version { font-size:20rpx; color:#D8D0C8; text-align:center; margin-top:20rpx; }
+.bottom-row { display:flex; justify-content:center; align-items:center; gap:20rpx; margin-top:20rpx; }
+.version { font-size:20rpx; color:#D8D0C8; }
+.feedback-link { font-size:20rpx; color:#D8D0C8; }
+.f-input { width:100%; height:200rpx; background:#FAF7F0; border-radius:14rpx; padding:20rpx; font-size:28rpx; color:#4A3728; border:1rpx solid #F0EBE0; margin-bottom:20rpx; box-sizing:border-box; }
 </style>

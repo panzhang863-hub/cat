@@ -4,8 +4,8 @@
  */
 
 const DEFAULTS = {
-  serverUrl: 'http://localhost:3000',
-  wsUrl: 'ws://localhost:3000',
+  serverUrl: 'https://your-server.com',
+  wsUrl: 'wss://your-server.com',
   gpsInterval: 3000, // GPS 上报间隔（毫秒）
 };
 

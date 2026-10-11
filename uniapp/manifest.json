@@ -1,60 +1,60 @@
 {
-  "name": "hide-and-seek",
-  "appid": "__UNI__HIDESEEK",
-  "description": "抓猫猫LBS游戏",
-  "versionName": "1.0.0",
-  "versionCode": "100",
-  "transformPx": false,
-  "app-plus": {
-    "usingComponents": true,
-    "nvueStyleCompiler": "uni-app",
-    "compilerVersion": 3,
-    "splashscreen": {
-      "alwaysShowBeforeRender": true,
-      "waiting": true,
-      "autoclose": true,
-      "delay": 0
-    },
-    "modules": {
-      "Maps": {},
-      "Geolocation": {}
-    },
-    "distribute": {
-      "android": {
-        "permissions": [
-          "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
-          "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
-          "<uses-permission android:name=\"android.permission.ACCESS_BACKGROUND_LOCATION\"/>",
-          "<uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\"/>",
-          "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>"
-        ]
-      },
-      "ios": {
-        "capabilities": {
-          "location": {
-            "purpose": "游戏需要获取实时位置来玩躲猫猫",
-            "backgroundModes": ["location"]
-          }
+    "name" : "hide-and-seek",
+    "appid" : "__UNI__HIDESEEK",
+    "description" : "抓猫猫LBS游戏",
+    "versionName" : "1.0.0",
+    "versionCode" : "100",
+    "transformPx" : false,
+    "app-plus" : {
+        "usingComponents" : true,
+        "nvueStyleCompiler" : "uni-app",
+        "compilerVersion" : 3,
+        "splashscreen" : {
+            "alwaysShowBeforeRender" : true,
+            "waiting" : true,
+            "autoclose" : true,
+            "delay" : 0
+        },
+        "modules" : {
+            "Maps" : {},
+            "Geolocation" : {}
+        },
+        "distribute" : {
+            "android" : {
+                "permissions" : [
+                    "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_BACKGROUND_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>"
+                ]
+            },
+            "ios" : {
+                "capabilities" : {
+                    "location" : {
+                        "purpose" : "游戏需要获取实时位置来玩躲猫猫",
+                        "backgroundModes" : [ "location" ]
+                    }
+                }
+            }
         }
-      }
-    }
-  },
-  "mp-weixin": {
-    "appid": "YOUR_APPID_HERE",
-    "setting": {
-      "urlCheck": false
     },
-    "permission": {
-      "scope.userLocation": {
-        "desc": "游戏需要获取你的实时位置来玩躲猫猫"
-      }
+    "mp-weixin" : {
+        "appid" : "wx988e97c3776899b3",
+        "setting" : {
+            "urlCheck" : false
+        },
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "游戏需要获取你的实时位置来玩躲猫猫"
+            }
+        },
+        "requiredBackgroundModes" : [ "location" ]
     },
-    "requiredBackgroundModes": ["location"]
-  },
-  "h5": {
-    "title": "躲猫猫",
-    "router": {
-      "mode": "hash"
+    "h5" : {
+        "title" : "躲猫猫",
+        "router" : {
+            "mode" : "hash"
+        }
     }
-  }
 }

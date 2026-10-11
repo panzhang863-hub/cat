@@ -35,7 +35,9 @@ async function handlePositionUpdate(roomCode, openId, position) {
 
   // 1. 越界检测
   if (zoneBoundary.length >= 3) {
-    if (!isInsidePolygon(position, zoneBoundary)) {
+    const inside = isInsidePolygon(position, zoneBoundary);
+    console.log(`[位置] ${openId} @ ${position.lat},${position.lng} 界内=${inside} 区域首点=${zoneBoundary[0].lat},${zoneBoundary[0].lng}`);
+    if (!inside) {
       await eliminatePlayer(roomCode, openId, 'out_of_bounds');
       return;
     }
@@ -175,6 +177,7 @@ async function usePeek(roomCode, seekerId) {
     const info = await getPlayerInfo(roomCode, pid);
     hiders.push({ openId: pid, nickName: info.nickName, lat: pos.lat||fallLat, lng: pos.lng||fallLng });
   }
+  console.log(`[peek] 找到 ${hiders.length} 个躲藏者: ${hiders.map(h=>`${h.nickName}@${h.lat},${h.lng}`).join(' | ')}`);
 
   await store.set(`game:${roomCode}:peek_active`, '1', 'EX', config.game.peekDuration);
 
@@ -204,16 +207,23 @@ async function checkGameEnd(roomCode) {
   if (!allRoles) return;
 
   let hidersTotal = 0, hidersAlive = 0;
+  let seekersTotal = 0, seekersAlive = 0;
   for (const [pid, r] of Object.entries(allRoles)) {
-    if (JSON.parse(r) === 'hider') {
+    const role = JSON.parse(r);
+    const eliminated = await store.sismember(elimKey, pid);
+    if (role === 'hider') {
       hidersTotal++;
-      const eliminated = await store.sismember(elimKey, pid);
       if (!eliminated) hidersAlive++;
+    } else if (role === 'seeker') {
+      seekersTotal++;
+      if (!eliminated) seekersAlive++;
     }
   }
 
   if (hidersAlive === 0 && hidersTotal > 0) {
-    await endGame(roomCode, 'seekers');
+    await endGame(roomCode, 'seekers');   // 所有鼠鼠被抓/退出 → 猫猫胜
+  } else if (seekersAlive === 0 && seekersTotal > 0) {
+    await endGame(roomCode, 'hiders');    // 所有猫猫退出 → 鼠鼠胜
   }
 }
 
@@ -275,14 +285,16 @@ async function broadcastPositions(roomCode) {
           visible.push({ openId: pid, nickName: info.nickName, lat: pos.lat, lng: pos.lng, role: pidRole });
         }
       } else {
-        // 躲藏者：能看到自己 + 其他躲藏者
+        // 躲藏者：能看到自己 + 其他躲藏者 + 寻找者（鼠鼠能一直看到猫猫）
         const pidRole = JSON.parse(allRoles[pid] || '""');
-        if (pid === playerId || pidRole === 'hider') {
-          visible.push({ openId: pid, nickName: '队友', lat: pos.lat, lng: pos.lng, role: pidRole });
+        if (pid === playerId || pidRole === 'hider' || pidRole === 'seeker') {
+          const info = await getPlayerInfo(roomCode, pid);
+          visible.push({ openId: pid, nickName: info.nickName, lat: pos.lat, lng: pos.lng, role: pidRole });
         }
       }
     }
 
+    console.log(`[广播] 给 ${playerId}(${role}) 发 ${visible.length} 个位置: ${visible.map(v=>`${v.openId.slice(0,8)}@${v.lat.toFixed(4)},${v.lng.toFixed(4)}`).join(' | ')}`);
     broadcast(roomCode, { type: 'positions_sync', data: { players: visible } }, [playerId]);
   }
 }
@@ -306,6 +318,10 @@ async function getPlayerInfo(roomCode, openId) {
 
 // ── 初始化游戏 Redis 数据 ──
 async function initGameState(roomCode, gameData) {
+  // 清理上一局残留状态（positions/eliminated/capture/peek_active 等），避免重开后串数据
+  const oldKeys = await store.keys(`game:${roomCode}:*`);
+  for (const k of oldKeys) await store.del(k);
+
   const stateKey = `game:${roomCode}:state`;
   const rolesKey = `game:${roomCode}:roles`;
   const peeksKey = `game:${roomCode}:peeks`;

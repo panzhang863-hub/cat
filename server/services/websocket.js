@@ -90,6 +90,8 @@ function handleMessage(roomCode, openId, msg) {
       break;
 
     case 'player_quit':
+      // 把退出玩家标记为淘汰，清掉其位置，其他玩家才能看到 TA 消失
+      gameEngine.eliminatePlayer(roomCode, openId, 'quit');
       broadcastToRoom(roomCode, {
         type: 'player_quit',
         data: { openId, nickName: msg.data.nickName || '玩家', ts: Date.now() }
